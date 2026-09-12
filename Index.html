@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fortune Tiger 2500x - Official</title><style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial Black}
+body{background:#000;height:100vh;overflow:hidden}
+#loader{position:fixed;inset:0;z-index:100;background:radial-gradient(#ffcc00,#ff8800 30%,#600 70%);display:flex;flex-direction:column;align-items:center;justify-content:center}
+#tigerImg{width:220px;height:220px;border-radius:50%;border:5px solid gold;box-shadow:0 0 40px gold;object-fit:cover;background:#fff}
+#perc{font-size:54px;color:gold;margin:8px;text-shadow:0 0 10px #000}
+.bar{width:280px;height:20px;background:#000;border:3px solid gold;border-radius:20px;overflow:hidden}
+#fill{height:100%;width:0%;background:linear-gradient(90deg,gold,orange)}
+#startBtn{display:none;margin-top:18px;padding:14px 40px;background:linear-gradient(gold,orange);border:4px solid #fff;border-radius:30px;font-size:20px;color:#000;box-shadow:0 0 20px gold;animation:pulse 0.8s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+#game{display:none;max-width:400px;margin:0 auto;background:linear-gradient(#222,#000);border:4px solid gold;border-radius:20px;overflow:hidden;height:100vh;flex-direction:column}
+.top{background:linear-gradient(gold,#ff8c00);padding:6px 10px;display:flex;justify-content:space-between;font-size:12px}
+#clock{padding:3px 8px;background:#000;color:#fff;border-radius:6px;font-size:10px;border:1px solid gold}
+#clock.lucky{background:gold;color:#000;animation:blink 0.5s infinite}@keyframes blink{50%{opacity:0.4}}
+.stats{display:flex;justify-content:space-between;padding:6px;background:#111;color:#fff;font-size:10px}.stats b{color:gold}
+.bank{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;padding:6px;background:#000}
+.bank button{padding:10px 2px;border:none;border-radius:10px;font-weight:900;font-size:10px}
+.dep{background:#00ff88}.wit{background:#ffcc00}.dl{background:#00d4ff;color:#fff}
+.reels{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:10px;background:#000;position:relative;min-height:310px}
+.col{background:linear-gradient(#fff,#bbb);border-radius:14px;display:flex;flex-direction:column;justify-content:space-around}
+.sym{height:95px;display:flex;align-items:center;justify-content:center;font-size:48px}
+#feature{position:absolute;inset:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:5}
+.card{width:180px;height:240px;background:linear-gradient(gold,#ff8c00);border:5px solid #fff;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:drop 0.5s}
+@keyframes drop{from{transform:translateY(-500px)}to{transform:translateY(0)}}
+#mult{font-size:50px}
+.win{height:44px;background:#111;border-top:2px solid gold;display:flex;align-items:center;justify-content:center;color:#0f0;font-size:13px}
+.ctrl{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;padding:8px;background:#000}
+.cbtn{padding:9px;border:none;border-radius:8px;font-weight:900;font-size:11px}.bet{background:#222;color:#fff;border:1px solid gold}.spin{grid-column:span 3;background:linear-gradient(gold,orange);font-size:22px;border:3px solid #fff}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:50}
+.box{background:#111;border:3px solid gold;border-radius:14px;padding:16px;width:90%;max-width:320px;color:#fff}
+.box input{width:100%;padding:12px;margin:10px 0;border-radius:8px;border:2px solid gold;background:#000;color:#fff}
+.box button{width:100%;padding:12px;margin-top:6px;border:none;border-radius:8px;font-weight:900}
+</style></head><body>
+<div id="loader">
+<img id="tigerImg" src="tiger.png" onerror="this.src='https://via.placeholder.com/220/FFD700/000000?text=🐯🧧'" alt="Tiger">
+<div style="color:#fff;margin-top:10px;font-size:12px;letter-spacing:2px">FORTUNE TIGER OFFICIAL</div>
+<div id="perc">1%</div><div class="bar"><div id="fill"></div></div>
+<div style="color:#fff;font-size:9px;margin-top:8px">Lucky Hours: 1:00 • 3:00 • 7:00 🧧</div>
+<button id="startBtn" onclick="startGame()">▶️ CLICK TO START</button>
+</div>
+
+<div id="game">
+<div class="top"><span>🐯 TIGER 2500x</span><span id="clock">--:--</span></div>
+<div class="stats"><span>BAL $<b id="bal">5000</b></span><span>BET $<b id="bet">10</b></span><span id="lt" style="color:gold">LUCKY:1H 3H 7H</span></div>
+<div class="bank"><button class="dep" onclick="openM('dep')">💰 DEPOSIT</button><button class="wit" onclick="openM('wit')">💸 WITHDRAW</button><button class="dl" onclick="dl()">⬇️ DOWNLOAD</button></div>
+<div class="reels"><div class="col" id="c0"></div><div class="col" id="c1"></div><div class="col" id="c2"></div><div id="feature"><div class="card"><div>TIGER CARD</div><div id="mult">?</div><div style="font-size:10px">SPINNING TO WIN</div></div></div></div>
+<div class="win" id="win">🔥 READY - SPIN AT LUCKY HOUR FOR x2! 🔥</div>
+<div class="ctrl"><button class="cbtn bet" onclick="chg(-1)">BET -</button><button class="cbtn bet" onclick="chg(1)">BET +</button><button class="cbtn bet" onclick="bal+=500;upd()">+ $500</button><button class="cbtn spin" onclick="spin()">SPIN 🐯</button></div>
+<div style="text-align:center;color:#555;font-size:7px;padding:3px">DEMO GAME - NO REAL MONEY - FOR ENTERTAINMENT ONLY</div>
+</div>
+
+<div class="modal" id="modal"><div class="box"><h3 id="mtitle" style="color:gold;text-align:center"></h3><p id="mdesc" style="font-size:10px;color:#aaa;text-align:center"></p><input id="mAmt" type="number" placeholder="Enter amount"><button id="mBtn" style="background:gold" onclick="doTx()">CONFIRM</button><button style="background:#222;color:#fff" onclick="closeM()">CLOSE</button><div id="hist" style="margin-top:8px;font-size:8px;color:#666;max-height:80px;overflow:auto"></div></div></div>
+
+<script>
+let SYM=['💰','🧧','💵','🍊','🔔'],bal=5000,bet=10,busy=false,mode='',hist=[];
+const $=id=>document.getElementById(id);
+function upd(){ $('bal').textContent=bal; $('bet').textContent=bet;}
+function draw(c,a){let d=$('c'+c);d.innerHTML='';a.forEach(s=>{let e=document.createElement('div');e.className='sym';e.textContent=s;d.appendChild(e)})}
+function rnd(){return Math.random()<0.35?'🐯':SYM[Math.floor(Math.random()*SYM.length)]}
+for(let i=0;i<3;i++)draw(i,[rnd(),rnd(),rnd()]);
+
+let pct=1;let li=setInterval(()=>{pct+=Math.floor(Math.random()*6)+2;if(pct>100)pct=100;$('perc').textContent=pct+'%';$('fill').style.width=pct+'%';if(pct>=100){clearInterval(li);$('startBtn').style.display='block';$('perc').textContent='READY!';}},40);
+function startGame(){ $('loader').style.display='none'; $('game').style.display='flex'; }
+
+setInterval(()=>{let d=new Date(),h=d.getHours(),m=d.getMinutes(),el=$('clock');el.textContent=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m);let lucky=[1,3,7,13,15,19];if(lucky.includes(h)){el.classList.add('lucky');el.textContent+=' 🔥';$('lt').textContent='🔥 LUCKY x2!';}else{el.classList.remove('lucky');$('lt').textContent='LUCKY:1H 3H 7H';}},1000);
+function chg(v){if(busy)return;bet=Math.max(5,Math.min(200,bet+v*5));upd();}
+function openM(t){mode=t;$('modal').style.display='flex';$('mAmt').value='';if(t=='dep'){$('mtitle').textContent='💰 DEPOSIT';$('mdesc').textContent='Add demo balance';$('mBtn').textContent='DEPOSIT';}else{$('mtitle').textContent='💸 WITHDRAW';$('mdesc').textContent='Balance: $'+bal+' Min $100';$('mBtn').textContent='WITHDRAW';} $('hist').innerHTML=hist.slice(-5).reverse().join('<br>')||'No transactions';}
+function closeM(){ $('modal').style.display='none';}
+function doTx(){let a=parseInt($('mAmt').value);if(!a||a<=0)return alert('Enter amount');if(mode=='dep'){bal+=a;hist.push('✅ +DEPOSIT $'+a);$('win').textContent='DEPOSIT $'+a+' SUCCESS';}else{if(a>bal)return alert('Not enough');if(a<100)return alert('Min $100');bal-=a;hist.push('⏳ -WITHDRAW $'+a+' PENDING');$('win').textContent='WITHDRAW $'+a+' REQUESTED';}upd();setTimeout(closeM,700);}
+function dl(){let b=new Blob([document.documentElement.outerHTML],{type:'text/html'});let u=URL.createObjectURL(b);let a=document.createElement('a');a.href=u;a.download='Fortune-Tiger.html';a.click();alert('✅ Downloaded! To install as App:\n1. Open downloaded file in Chrome\n2. Tap ⋮ → Add to Home screen\n3. Tap Install\n\nNow plays offline like real PG Soft!');}
+function spin(){if(busy)return;if(bal<bet){$('win').textContent='LOW BALANCE - DEPOSIT';return}busy=true;bal-=bet;upd();$('win').textContent='SPINNING...';let res=[[],[],[]];let iv=setInterval(()=>{for(let c=0;c<3;c++)draw(c,[rnd(),rnd(),rnd()])},70);
+setTimeout(()=>{clearInterval(iv);for(let c=0;c<3;c++)for(let r=0;r<3;r++)res[c][r]=rnd();let flat=res.flat();if(flat.every(s=>s===flat[0])){$('feature').style.display='flex';let opts=[10,15,25,50];let f=opts[Math.floor(Math.random()*opts.length)];let h=new Date().getHours();if([1,3,7,13,15,19].includes(h))f*=2;setTimeout(()=>{$('mult').textContent=f+'X';setTimeout(()=>{$('feature').style.display='none';let w=bet*f;bal+=w;upd();$('win').textContent='🎉 CARD BONUS '+f+'X = $'+w+'!';busy=false;},1200);},800);}else{for(let c=0;c<3;c++)draw(c,res[c]);let best=0;[[[0,0],[1,0],[2,0]],[[0,1],[1,1],[2,1]],[[0,2],[1,2],[2,2]]].forEach(l=>{let a=res[l[0][0]][l[0][1]],b=res[l[1][0]][l[1][1]],c=res[l[2][0]][l[2][1]];if(a===b&&b===c){let m=a==='🐯'?[10,25,100,500,2500][Math.floor(Math.random()*5)]:8;if(m>best)best=m}});if(best>0){let h=new Date().getHours();if([1,3,7,13,15,19].includes(h))best=Math.floor(best*1.5);let w=bet*best;bal+=w;upd();$('win').textContent=best>=100?'🔥 MEGA '+best+'X $'+w:'WIN '+best+'X $'+w;}else $('win').textContent='TRY AGAIN';busy=false;}upd();},1100);}
+upd();
+</script></body></html>
